@@ -1,7 +1,6 @@
 package argparser
 
 import (
-	// "fmt"
 	"os"
 )
 
@@ -13,12 +12,12 @@ const (
 )
 
 type Command struct {
-	short  string
-	long   string
-	opts   Options
-	ctype  CommandType
-	result interface{}
-	found  *bool
+	result      interface{}
+	found       *bool
+	short       string
+	long        string
+	opts        Options
+	commandType CommandType
 }
 
 type Options struct {
@@ -36,10 +35,17 @@ type Parser struct {
 }
 
 func NewParser(name string, description string) Parser {
+	cmds := make([]Command, 0)
 	return Parser{
 		name:        name,
 		description: description,
+		printHelp:   true,
+		commands:    &cmds,
 	}
+}
+
+func (p *Parser) DisableHelp() {
+	p.printHelp = false
 }
 
 func (p *Parser) GetArgc() int {
@@ -50,38 +56,39 @@ func (p *Parser) Parse() error {
 	args := os.Args
 	p.argc = len(args)
 
-	// no args, no parse - simple
 	if p.GetArgc() == 0 {
 		return nil
-	}
-
-	if len(*p.commands) == 0 {
+	} else if len(*p.commands) == 0 {
 		return nil
 	}
 
-	/*
-		for _, cmd := range *p.commands {
-			if cmd.ctype == StringParser {
-				fmt.Println(cmd.short)
+	for _, cmd := range *p.commands {
+		if cmd.commandType == StringParser {
+			if err := p.parseString(cmd, args); err != nil {
+				return err
 			}
 		}
-	*/
+	}
 
 	return nil
 }
 
-func (p *Parser) String(short string, long string, opts *Options) (result *string, found *bool) {
+func (p *Parser) String(short string, long string, opts *Options) (*string, *bool) {
+	var (
+		result string
+		found  bool
+	)
 	cmd := Command{
-		result: result,
-		found:  found,
-		ctype:  StringParser,
-		short:  short,
-		long:   long,
-		opts:   *opts,
+		result:      &result,
+		found:       &found,
+		commandType: StringParser,
+		short:       short,
+		long:        long,
+		opts:        *opts,
 	}
 	*p.commands = append(*p.commands, cmd)
 
-	return result, found
+	return &result, &found
 }
 
 func (p *Parser) MultiString(short string, long string, opts *Options) (value []string, found bool) {
