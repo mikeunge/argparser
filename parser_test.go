@@ -19,8 +19,8 @@ func TestParseString(t *testing.T) {
 	cmd := Command{
 		result: &result,
 		found:  &found,
-		short:  "--test",
-		long:   "-t",
+		long:   "--test",
+		short:  "-t",
 	}
 
 	if err := parser.parseString(&cmd, args); err != nil {
@@ -49,8 +49,8 @@ func TestFailParseString(t *testing.T) {
 	cmd := Command{
 		result: &result,
 		found:  &found,
-		short:  "--test",
-		long:   "-t",
+		long:   "--test",
+		short:  "-t",
 	}
 
 	var err error
@@ -65,7 +65,7 @@ func TestFailParseString(t *testing.T) {
 }
 
 // TestParseMultiString
-// Should parse multiple strings..
+// Should parse multiple strings.
 func TestParseMultiString(t *testing.T) {
 	name := "argparser init test"
 	description := "Testing the parser init + arg count functionality"
@@ -80,8 +80,8 @@ func TestParseMultiString(t *testing.T) {
 	cmd := Command{
 		result: &result,
 		found:  &found,
-		short:  "--test",
-		long:   "-t",
+		long:   "--test",
+		short:  "-t",
 	}
 
 	*parser.commands = append(*parser.commands, cmd)
@@ -101,5 +101,35 @@ func TestParseMultiString(t *testing.T) {
 			continue
 		}
 		t.Fatalf("parser.parseMultiString() failed. want: %s | %s, got: %s | %s\n", want1, want2, result[0], result[1])
+	}
+}
+
+// TestParseFlag
+// Should parse a flag.
+func TestParseFlag(t *testing.T) {
+	var (
+		parser Parser
+		result bool
+		found  bool
+	)
+
+	cmd := Command{
+		result: &result,
+		found:  &found,
+		long:   "--test",
+		short:  "-t",
+	}
+	args := []string{"--test"}
+
+	if err := parser.parseFlag(&cmd, args); err != nil {
+		t.Fatalf("parser.parseFlag() should not fail, %s\n", err.Error())
+	}
+
+	if !found {
+		t.Fatalf("parser.parseFlag() failed. want: true, got: %t\n", found)
+	}
+
+	if !result {
+		t.Fatalf("parser.parseFlag() failed. want: true, got: %t\n", result)
 	}
 }

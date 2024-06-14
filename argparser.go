@@ -9,6 +9,7 @@ type CommandType int
 const (
 	StringParser      CommandType = 0
 	MultiStringParser             = 1
+	FlagParser                    = 2
 )
 
 type Command struct {
@@ -62,16 +63,16 @@ func (p *Parser) Parse() error {
 		return nil
 	}
 
-	var err error
 	for _, cmd := range *p.commands {
-		if cmd.commandType == StringParser {
-			if err = p.parseString(&cmd, args); err != nil {
-				return err
-			}
-		} else if cmd.commandType == MultiStringParser {
-			if err = p.parseMultiString(&cmd, args); err != nil {
-				return err
-			}
+		switch cmd.commandType {
+		case StringParser:
+			return p.parseString(&cmd, args)
+		case MultiStringParser:
+			return p.parseMultiString(&cmd, args)
+		case FlagParser:
+			return p.parseFlag(&cmd, args)
+		default:
+			return nil
 		}
 	}
 
@@ -104,6 +105,25 @@ func (p *Parser) MultiString(short string, long string, opts *Options) (*[]strin
 		result:      &result,
 		found:       &found,
 		commandType: MultiStringParser,
+		short:       short,
+		long:        long,
+		opts:        *opts,
+	}
+	*p.commands = append(*p.commands, cmd)
+
+	return &result, &found
+}
+
+func (p *Parser) Flag(short string, long string, opts *Options) (*bool, *bool) {
+	var (
+		result bool
+		found  bool
+	)
+
+	cmd := Command{
+		result:      &result,
+		found:       &found,
+		commandType: FlagParser,
 		short:       short,
 		long:        long,
 		opts:        *opts,

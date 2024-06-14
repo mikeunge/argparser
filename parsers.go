@@ -48,3 +48,14 @@ func (p *Parser) parseMultiString(cmd *Command, args []string) error {
 	}
 	return fmt.Errorf("nothing to parse.")
 }
+
+func (p *Parser) parseFlag(cmd *Command, args []string) error {
+	for i := 0; i < len(args); i++ {
+		if args[i] == cmd.long || args[i] == cmd.short {
+			*cmd.found = true
+			*cmd.result.(*bool) = true
+			return nil
+		}
+	}
+	return fmt.Errorf("nothing to parse.")
+}
