@@ -1,6 +1,7 @@
 package argparser
 
 import (
+	"fmt"
 	"os"
 )
 
@@ -55,13 +56,22 @@ func (p *Parser) GetArgc() int {
 	return p.argc
 }
 
+func (p *Parser) PrintHelp() {
+	if !p.printHelp {
+		return
+	}
+	fmt.Printf("%s - %s\n\nAvailable arguments:\n", p.name, p.description)
+	for _, cmd := range *p.commands {
+		fmt.Printf("\t%s\t%s required: %t", fmt.Sprintf("%s, %s", cmd.short, cmd.long), cmd.opts.Help, cmd.opts.Required)
+	}
+}
+
 func (p *Parser) Parse() error {
 	args := os.Args
-	p.argc = len(args)
+	p.argc = len(args) - 1 // remove one (1) because the first arg is always the app name
 
 	if p.GetArgc() == 0 {
-		return nil
-	} else if len(*p.commands) == 0 {
+		p.PrintHelp()
 		return nil
 	}
 
@@ -81,7 +91,6 @@ func (p *Parser) Parse() error {
 			return nil
 		}
 	}
-
 	return nil
 }
 
@@ -90,6 +99,9 @@ func (p *Parser) String(short string, long string, opts *Options) (*string, *boo
 		result string
 		found  bool
 	)
+
+	// TODO: verify opts
+
 	cmd := Command{
 		result:      &result,
 		found:       &found,
@@ -175,4 +187,20 @@ func (p *Parser) MultiNumber(short string, long string, opts *Options) (*[]int, 
 	*p.commands = append(*p.commands, cmd)
 
 	return &result, &found
+}
+
+func determineUsedFlag(c *Command) string {
+	if len(c.long) > 0 {
+		return c.long
+	} else if len(c.short) > 0 {
+		return c.short
+	}
+	return "No flag"
+}
+
+func requiredCheck(c *Command) error {
+	if *&c.opts.Required && !*c.found {
+		return fmt.Errorf("%s is required but was not provided. Check with --help for more information.", determineUsedFlag(c))
+	}
+	return nil
 }
