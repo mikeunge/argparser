@@ -62,9 +62,14 @@ func (p *Parser) Parse() error {
 		return nil
 	}
 
+	var err error
 	for _, cmd := range *p.commands {
 		if cmd.commandType == StringParser {
-			if err := p.parseString(cmd, args); err != nil {
+			if err = p.parseString(&cmd, args); err != nil {
+				return err
+			}
+		} else if cmd.commandType == MultiStringParser {
+			if err = p.parseMultiString(&cmd, args); err != nil {
 				return err
 			}
 		}
@@ -91,6 +96,19 @@ func (p *Parser) String(short string, long string, opts *Options) (*string, *boo
 	return &result, &found
 }
 
-func (p *Parser) MultiString(short string, long string, opts *Options) (value []string, found bool) {
-	return []string{}, false
+func (p *Parser) MultiString(short string, long string, opts *Options) (*[]string, *bool) {
+	var found bool
+
+	result := make([]string, 0)
+	cmd := Command{
+		result:      &result,
+		found:       &found,
+		commandType: MultiStringParser,
+		short:       short,
+		long:        long,
+		opts:        *opts,
+	}
+	*p.commands = append(*p.commands, cmd)
+
+	return &result, &found
 }
