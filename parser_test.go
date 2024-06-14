@@ -1,6 +1,7 @@
 package argparser
 
 import (
+	"fmt"
 	"testing"
 )
 
@@ -131,5 +132,104 @@ func TestParseFlag(t *testing.T) {
 
 	if !result {
 		t.Fatalf("parser.parseFlag() failed. want: true, got: %t\n", result)
+	}
+}
+
+// TestParseNumber
+// Should parse a number.
+func TestParseNumber(t *testing.T) {
+	var (
+		parser Parser
+		result int
+		found  bool
+	)
+	want := 454
+
+	cmd := Command{
+		result: &result,
+		found:  &found,
+		long:   "--test",
+		short:  "-t",
+	}
+	args := []string{"--test", fmt.Sprintf("%d", want)}
+
+	if err := parser.parseNumber(&cmd, args); err != nil {
+		t.Fatalf("parser.parseNumber() should not fail, %s\n", err.Error())
+	}
+
+	if !found {
+		t.Fatalf("parser.parseNumber() failed. want: true, got: %t\n", found)
+	}
+
+	if result != want {
+		t.Fatalf("parser.parseNumber() failed. want: %d, got: %d\n", want, result)
+	}
+}
+
+// TestFailParseNumber
+// Should fail parseing a string as number.
+func TestFailParseNumber(t *testing.T) {
+	var (
+		parser Parser
+		result int
+		found  bool
+	)
+
+	cmd := Command{
+		result: &result,
+		found:  &found,
+		long:   "--test",
+		short:  "-t",
+	}
+	args := []string{"--test", "abc"}
+
+	var err error
+	if err = parser.parseNumber(&cmd, args); err == nil {
+		t.Fatalf("parser.parseNumber() should fail, but didn't, %d\n", result)
+	}
+
+	want := "argument is not of type int."
+	if err.Error() != want {
+		t.Fatalf("parser.parseNumber() failed with wrong message, want: %s got: %s\n", want, err.Error())
+	}
+}
+
+// TestParseMultiNumber
+// Should parse an array of numbers.
+func TestParseMultiNumber(t *testing.T) {
+	name := "argparser init test"
+	description := "Testing the parser init + arg count functionality"
+	want1 := 454
+	want2 := 12312
+
+	parser := NewParser(name, description)
+	args := []string{"--test", fmt.Sprintf("%d", want1), fmt.Sprintf("%d", want2)}
+	result := make([]int, 0)
+
+	var found bool
+	cmd := Command{
+		result: &result,
+		found:  &found,
+		long:   "--test",
+		short:  "-t",
+	}
+
+	*parser.commands = append(*parser.commands, cmd)
+	if err := parser.parseMultiNumber(&cmd, args); err != nil {
+		t.Fatalf("parser.parseMultiNumber() failed,  %s\n", err)
+	}
+
+	if !found {
+		t.Fatalf("parser.parseMultiNumber() failed. want: true, got: %t\n", found)
+	}
+
+	for i := 0; i < len(result); i++ {
+		if result[i] == want1 {
+			continue
+		}
+		if result[i] == want2 {
+			continue
+		}
+		t.Fatalf("parser.parseMultiNumber() failed. want: %d | %d, got: %d | %d\n", want1, want2, result[0], result[1])
 	}
 }

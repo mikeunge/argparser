@@ -10,6 +10,8 @@ const (
 	StringParser      CommandType = 0
 	MultiStringParser             = 1
 	FlagParser                    = 2
+	NumberParser                  = 3
+	MultiNumberParser             = 4
 )
 
 type Command struct {
@@ -71,6 +73,10 @@ func (p *Parser) Parse() error {
 			return p.parseMultiString(&cmd, args)
 		case FlagParser:
 			return p.parseFlag(&cmd, args)
+		case NumberParser:
+			return p.parseNumber(&cmd, args)
+		case MultiNumberParser:
+			return p.parseMultiNumber(&cmd, args)
 		default:
 			return nil
 		}
@@ -124,6 +130,44 @@ func (p *Parser) Flag(short string, long string, opts *Options) (*bool, *bool) {
 		result:      &result,
 		found:       &found,
 		commandType: FlagParser,
+		short:       short,
+		long:        long,
+		opts:        *opts,
+	}
+	*p.commands = append(*p.commands, cmd)
+
+	return &result, &found
+}
+
+func (p *Parser) Number(short string, long string, opts *Options) (*int, *bool) {
+	var (
+		result int
+		found  bool
+	)
+
+	cmd := Command{
+		result:      &result,
+		found:       &found,
+		commandType: NumberParser,
+		short:       short,
+		long:        long,
+		opts:        *opts,
+	}
+	*p.commands = append(*p.commands, cmd)
+
+	return &result, &found
+}
+
+func (p *Parser) MultiNumber(short string, long string, opts *Options) (*[]int, *bool) {
+	var (
+		result []int
+		found  bool
+	)
+
+	cmd := Command{
+		result:      &result,
+		found:       &found,
+		commandType: MultiNumberParser,
 		short:       short,
 		long:        long,
 		opts:        *opts,
