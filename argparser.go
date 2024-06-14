@@ -62,7 +62,7 @@ func (p *Parser) PrintHelp() {
 	}
 	fmt.Printf("%s - %s\n\nAvailable arguments:\n", p.name, p.description)
 	for _, cmd := range *p.commands {
-		fmt.Printf("\t%s\t%s required: %t", fmt.Sprintf("%s, %s", cmd.short, cmd.long), cmd.opts.Help, cmd.opts.Required)
+		fmt.Printf("\t%s\t%s required: %t\n", fmt.Sprintf("%s, %s", cmd.short, cmd.long), cmd.opts.Help, cmd.opts.Required)
 	}
 }
 
