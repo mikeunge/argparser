@@ -19,7 +19,7 @@ func (p *Parser) parseString(cmd *Command, args []string) error {
 		if args[i] == cmd.long || args[i] == cmd.short {
 			next := i + 1
 			if next >= len(args) {
-				return fmt.Errorf("string parser expects a value after the flag, nothing found.")
+				return fmt.Errorf("String parser expects a value after the flag, nothing found.")
 			}
 			*cmd.found = true
 			*cmd.result.(*string) = args[next]
@@ -34,7 +34,7 @@ func (p *Parser) parseMultiString(cmd *Command, args []string) error {
 		if args[i] == cmd.long || args[i] == cmd.short {
 			next := i + 1
 			if next >= len(args) {
-				return fmt.Errorf("multi string parser expects a value after the flag, nothing found.")
+				return fmt.Errorf("Multi string parser expects a value after the flag, nothing found.")
 			}
 
 			// we only need the FROM to END of the array to parse
@@ -68,12 +68,12 @@ func (p *Parser) parseNumber(cmd *Command, args []string) error {
 		if args[i] == cmd.long || args[i] == cmd.short {
 			next := i + 1
 			if next >= len(args) {
-				return fmt.Errorf("number parser expects a value after the flag, nothing found.")
+				return fmt.Errorf("Number parser expects a value after the flag, nothing found.")
 			}
 
 			var err error
 			if *cmd.result.(*int), err = strconv.Atoi(args[next]); err != nil {
-				return fmt.Errorf("argument is not of type int.")
+				return fmt.Errorf("Argument is not of type int.")
 			}
 			*cmd.found = true
 			break
@@ -87,7 +87,7 @@ func (p *Parser) parseMultiNumber(cmd *Command, args []string) error {
 		if args[i] == cmd.long || args[i] == cmd.short {
 			next := i + 1
 			if next >= len(args) {
-				return fmt.Errorf("number parser expects a value after the flag, nothing found.")
+				return fmt.Errorf("Number parser expects a value after the flag, nothing found.")
 			}
 
 			sub := args[next:]
@@ -98,7 +98,7 @@ func (p *Parser) parseMultiNumber(cmd *Command, args []string) error {
 
 				num, err := strconv.Atoi(sub[j])
 				if err != nil {
-					return fmt.Errorf("argument is not of type int.")
+					return fmt.Errorf("Argument is not of type int.")
 				}
 
 				*cmd.result.(*[]int) = append(*cmd.result.(*[]int), num)
