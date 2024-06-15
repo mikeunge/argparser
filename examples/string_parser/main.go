@@ -23,7 +23,7 @@ func main() {
 	}
 
 	if !*found {
-		fmt.Println("No argument provided for --echo, goodbye!")
+		fmt.Println("\nNo argument provided for --echo, goodbye!")
 		os.Exit(0)
 	}
 	fmt.Printf("%s\n", *result)
