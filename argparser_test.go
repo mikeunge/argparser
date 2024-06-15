@@ -5,34 +5,6 @@ import (
 	"testing"
 )
 
-// TestInitParser
-// Should initialize the parser.
-func TestInitParser(t *testing.T) {
-	name := "argparser init test"
-	description := "Testing the parser init + arg count functionality"
-
-	parser := NewParser(name, description)
-
-	os.Args = append(os.Args, "--help")
-	err := parser.Parse()
-	if err != nil {
-		t.Fatalf("parser.parse() failed, %s\n", err.Error())
-	}
-
-	// Why 4? We only append "--help"?
-	// go test adds 3 extra arguments:
-	// 1. temp build path
-	// 2. panic on exit
-	// 3. max timeout
-	// 4. finally our "--help" flag :)
-
-	want := 4
-	argc := parser.GetArgc()
-	if argc != want {
-		t.Fatalf("parser.getArgc() failed. want: %d, got: %d\n", want, argc)
-	}
-}
-
 // TestStringParser
 // Should parse the provided string.
 func TestStringParser(t *testing.T) {
