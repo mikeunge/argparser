@@ -33,8 +33,7 @@ func main() {
 	results["names"], found["names"] = parser.MultiString("-n", "--names", &argparser.Options{Required: false, Help: "A list of names to print."})
 
 	if err := parser.Parse(); err != nil {
-		fmt.Printf("Parser returned with error: %s\n", err.Error())
-		parser.PrintHelp()
+		parser.Usage(err.Error())
 		os.Exit(1)
 	}
 

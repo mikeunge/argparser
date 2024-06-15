@@ -17,8 +17,7 @@ func main() {
 	result, found := parser.MultiString("-l", "--list", &argparser.Options{Required: false, Help: "Echo's whatever you provide."})
 
 	if err := parser.Parse(); err != nil {
-		fmt.Printf("Parser returned with error: %s\n", err.Error())
-		parser.PrintHelp()
+		parser.Usage(err.Error())
 		os.Exit(1)
 	}
 
