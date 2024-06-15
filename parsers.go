@@ -23,10 +23,10 @@ func (p *Parser) parseString(cmd *Command, args []string) error {
 			}
 			*cmd.found = true
 			*cmd.result.(*string) = args[next]
-			return nil
+			break
 		}
 	}
-	return fmt.Errorf("nothing to parse.")
+	return nil
 }
 
 func (p *Parser) parseMultiString(cmd *Command, args []string) error {
@@ -47,10 +47,9 @@ func (p *Parser) parseMultiString(cmd *Command, args []string) error {
 				*cmd.found = true
 				*cmd.result.(*[]string) = append(*cmd.result.(*[]string), sub[j])
 			}
-			return nil
 		}
 	}
-	return fmt.Errorf("nothing to parse.")
+	return nil
 }
 
 func (p *Parser) parseFlag(cmd *Command, args []string) error {
@@ -77,10 +76,10 @@ func (p *Parser) parseNumber(cmd *Command, args []string) error {
 				return fmt.Errorf("argument is not of type int.")
 			}
 			*cmd.found = true
-			return nil
+			break
 		}
 	}
-	return fmt.Errorf("nothing to parse.")
+	return nil
 }
 
 func (p *Parser) parseMultiNumber(cmd *Command, args []string) error {
@@ -105,8 +104,7 @@ func (p *Parser) parseMultiNumber(cmd *Command, args []string) error {
 				*cmd.result.(*[]int) = append(*cmd.result.(*[]int), num)
 				*cmd.found = true
 			}
-			return nil
 		}
 	}
-	return fmt.Errorf("nothing to parse.")
+	return nil
 }
