@@ -76,21 +76,32 @@ func (p *Parser) Parse() error {
 	}
 
 	for _, cmd := range *p.commands {
+		var err error
+
 		switch cmd.commandType {
 		case StringParser:
-			return p.parseString(&cmd, args)
+			err = p.parseString(&cmd, args)
+			break
 		case MultiStringParser:
-			return p.parseMultiString(&cmd, args)
+			err = p.parseMultiString(&cmd, args)
+			break
 		case FlagParser:
-			return p.parseFlag(&cmd, args)
+			err = p.parseFlag(&cmd, args)
+			break
 		case NumberParser:
-			return p.parseNumber(&cmd, args)
+			err = p.parseNumber(&cmd, args)
+			break
 		case MultiNumberParser:
-			return p.parseMultiNumber(&cmd, args)
+			err = p.parseMultiNumber(&cmd, args)
+			break
 		default:
-			return nil
+			return fmt.Errorf("Command %d is not a known command. Aborting.", cmd.commandType)
+		}
+		if err != nil {
+			return err
 		}
 	}
+
 	return nil
 }
 

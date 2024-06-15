@@ -41,7 +41,7 @@ func (p *Parser) parseMultiString(cmd *Command, args []string) error {
 			sub := args[next:]
 			for j := 0; j < len(sub); j++ {
 				if isCommand(p.commands, sub[j]) {
-					continue
+					return nil
 				}
 
 				*cmd.found = true
@@ -58,10 +58,10 @@ func (p *Parser) parseFlag(cmd *Command, args []string) error {
 		if args[i] == cmd.long || args[i] == cmd.short {
 			*cmd.found = true
 			*cmd.result.(*bool) = true
-			return nil
+			break
 		}
 	}
-	return fmt.Errorf("nothing to parse.")
+	return nil
 }
 
 func (p *Parser) parseNumber(cmd *Command, args []string) error {
@@ -94,7 +94,7 @@ func (p *Parser) parseMultiNumber(cmd *Command, args []string) error {
 			sub := args[next:]
 			for j := 0; j < len(sub); j++ {
 				if isCommand(p.commands, sub[j]) {
-					continue
+					return nil
 				}
 
 				num, err := strconv.Atoi(sub[j])
